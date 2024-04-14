@@ -1,0 +1,14 @@
+boto3
+langchain
+streamlit
+sentence-transformers
+langchain-text-splitters
+sqlalchemy==2.0.0
+pymilvus
+google-generativeai
+python-dotenv
+PyPDF2
+faiss-cpu
+langchain_google_genai
+PyMuPDF
+st_pages
