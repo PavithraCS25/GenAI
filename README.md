@@ -15,8 +15,8 @@ Add the AWS secret key from your terminal
 ```aws configure```
 Enter the aws ID, secret key, default region and default file format
 
-pip install -r requirements.txt
+```pip install -r requirements.txt```
 
-streamlit run home.py --server.enableXsrfProtection false
+```streamlit run home.py --server.enableXsrfProtection false```
 
 Open the application using the private or public URL displayed
