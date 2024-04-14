@@ -1,3 +1,4 @@
+# Importing necessary libraries
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -9,11 +10,19 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
+'''
+This code is used read PDF and build a question answering bot to answer questions from the PDF
+'''
 
+# Loading environment variables from .env file
 load_dotenv()
 os.getenv("GOOGLE_API_KEY")
+# Configuring Google API key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Path to save the FAISS vector store
 DB_FAISS_PATH = 'vectorstore/db_faiss'
+
+# Function to extract text from PDF documents
 def get_pdf_text(pdf_docs):
     text=""
     for pdf in pdf_docs:
@@ -22,20 +31,21 @@ def get_pdf_text(pdf_docs):
             text+= page.extract_text()
     return  text
 
+# Function to split text into chunks for vectorization
 def get_text_chunks(text):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=1000)
     chunks = text_splitter.split_text(text)
     return chunks
 
-
+# Function to create and save vector store from text chunks
 def get_vector_store(text_chunks):
     embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     vector_store.save_local(DB_FAISS_PATH)
 
-
+# Function to get the conversational chain for answering questions
 def get_conversational_chain():
-
+    # Prompt template for answering questions
     prompt_template = """
     Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
     provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n
@@ -44,27 +54,28 @@ def get_conversational_chain():
 
     Answer:
     """
-
+    # Initializing GenerativeAI chat model
     model = ChatGoogleGenerativeAI(model="gemini-pro",
                                temperature=0.1,
                                max_output_tokens=2048,
                             )
 
+    # Creating a prompt template
     prompt = PromptTemplate(template = prompt_template, input_variables = ["context", "question"])
+    # Loading question-answering chain
     chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
-
     return chain
 
-
+# Function to handle user input and generate response
 def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
-    
+    # Loading FAISS vector store from local storage
     new_db = FAISS.load_local(DB_FAISS_PATH, embeddings,allow_dangerous_deserialization=True)
+    # Performing similarity search based on user question
     docs = new_db.similarity_search(user_question)
-
+    # Getting conversational chain for answering questions
     chain = get_conversational_chain()
-
-    
+    # Generating response using conversational chain   
     response = chain(
         {"input_documents":docs, "question": user_question}
         , return_only_outputs=True)
