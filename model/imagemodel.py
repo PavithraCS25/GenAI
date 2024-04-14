@@ -1,38 +1,28 @@
-import vertexai
-from vertexai.preview.generative_models import GenerativeModel, Part
-import vertexai.preview.generative_models as generative_models
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains.question_answering import load_qa_chain
 import google.generativeai as genai
-from langchain.vectorstores import FAISS
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
+from langchain_community.vectorstores import FAISS
 import os
-from google.cloud import storage
-import pandas as pd
 import json
 import re
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-import os
-from langchain.chains import ConversationalRetrievalChain
+import PIL.Image
 import base64
 
 content_type = "image/jpeg"
+DB_FAISS_PATH = 'vectorstore/db_faiss'
 def process_image(images):
     for image in images:
         # To read file as bytes:
-        bytes_data = image.getvalue()
-        # Encode the video data to base64 and then decode it to bytes
-        base64_encoded_data = base64.b64encode(bytes_data)
-        base64_decoded_data = base64.b64decode(base64_encoded_data)
-
-        # Assuming Part.from_data expects bytes
-        part = Part.from_data(data=base64_decoded_data,mime_type=content_type)
-        result_json = generate_df(part)
+        image = PIL.Image.open(image)
+        result_json = generate_df(image)
     return result_json
 
 def generate_df(part):
-  model = GenerativeModel("gemini-ultra-vision")
+  model = genai.GenerativeModel("gemini-pro-vision")
   responses = model.generate_content(
     [part, """Extract the below details from video and give me result in JSON format. 
     
@@ -68,13 +58,14 @@ def generate_df(part):
         "top_k": 32
     },
     safety_settings={
-          generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-          generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-          generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-          generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
     },
     stream=False,
   )
+  print(responses.text)
   return responses.text
 
 def get_conversational_chain():
@@ -106,12 +97,12 @@ def get_text_chunks(text):
 def get_vector_store(text_chunks):
     embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
-    vector_store.save_local("faiss_index")
+    vector_store.save_local(DB_FAISS_PATH)
 
 def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
     
-    new_db = FAISS.load_local("faiss_index", embeddings)
+    new_db = FAISS.load_local(DB_FAISS_PATH, embeddings,allow_dangerous_deserialization=True)
     docs = new_db.similarity_search(user_question)
 
     chain = get_conversational_chain()
