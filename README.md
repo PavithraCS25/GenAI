@@ -9,7 +9,7 @@ Clone the repository and add the below folders to your root i.e. GenAIchat folde
 5. vectorstore/db_faiss - create a folder to store the FAISS vector for retrieval chain
 
 Add the GOOGLE_API_KEY in your terminal
-```export GOOGLE_API_KEY='<your api key'```
+```export GOOGLE_API_KEY='<your api key>'```
 
 Add the AWS secret key from your terminal
 ```aws configure```
