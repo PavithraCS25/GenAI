@@ -1,13 +1,19 @@
+# Import necessary libraries
 import streamlit as st
 import base64
 import fitz
-from model import pdfmodel
+from model import pdfmodel # Importing custom PDF model functions
 import os
 from st_pages import Page, show_pages, add_page_title,Section
-st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
-# Specify what pages should be shown in the sidebar, and what their titles 
-# and icons should be
 
+'''
+This file contains the frontend code for the home page.
+'''
+
+
+# Set page configuration including title, icon, layout, and initial sidebar state
+st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
+# Header section with name, LinkedIn link, contact, and email
 header = st.container()
 header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
 
@@ -20,6 +26,7 @@ with link:
     """<a href="https://www.linkedin.com/in/pavithra-coimbatore-sainath25/">
     <img src="data:image/png;base64,{}" width="60">
     </a>""".format(
+        # Encode LinkedIn logo image to base64
         base64.b64encode(open("images/linkedin-blue-logo-icon.png", "rb").read()).decode()
     ),
     unsafe_allow_html=True,
@@ -31,7 +38,7 @@ with contact:
 with email:
     st.write("Email: pavithrasainath7@gmail.com")
     
-### Custom CSS for the sticky header
+# Custom CSS for the sticky header
 st.markdown(
     """
 <style>
@@ -49,7 +56,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
+# Display pages in the sidebar
 show_pages(
     [
         Page("home.py", "About Me",icon=":woman:"),
@@ -84,11 +91,13 @@ def display_pdf(file_path):
                 st.image(image_bytes)
         with col4:
             with st.container(border=True):
+                # Provide sample questions and text input for user questions
                 sample_question = st.radio(
                     "Here are few sample questions.",
                     ["Summarize the profile","List her Gen AI and ML experience", "What are her technical skills?"])
                 
                 user_question = st.text_input('Ask about me here...',key='resume')
+                # Set the user question based on the selected sample question if no user input
                 if not user_question:
                     if sample_question == 'Summarize the profile':
                         resume_question = sample_question
@@ -98,9 +107,11 @@ def display_pdf(file_path):
                         resume_question = sample_question
                 else:
                     resume_question = user_question
+                # If there's a user question, display the response
                 if resume_question:
                     response = pdfmodel.user_input(resume_question)
                     st.write(response["output_text"])
+# Apply custom CSS to adjust the sidebar width
 st.markdown(
     """
     <style>
@@ -112,8 +123,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-    
+# Get the raw text from the PDF file    
 raw_text = pdfmodel.get_pdf_text([pdf_file_name])
+# Get text chunks
 text_chunks = pdfmodel.get_text_chunks(raw_text)
+# Get vector store for text chunks
 pdfmodel.get_vector_store(text_chunks)
+# Display the PDF and the text input for user questions
 display_pdf(pdf_file_name)
