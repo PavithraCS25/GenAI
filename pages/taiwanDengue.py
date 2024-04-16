@@ -23,7 +23,7 @@ st.divider()
 # Embed Shiny web application using iframe
 with st.container(border=True):
     iframe_src = "https://dengueepiviz.shinyapps.io/DengueEPIViz/"
-    components.iframe(iframe_src,height=900,width=1090)
+    components.iframe(iframe_src,height=900,width=1000)
 # Display report
 st.subheader('Report')
 with st.container(border=True):

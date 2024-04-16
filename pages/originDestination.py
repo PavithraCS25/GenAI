@@ -31,4 +31,4 @@ with fitz.open(pdf_file_name) as doc:
     image_bytes = pix.tobytes("png")
     # Display the image in Streamlit
     with st.container(border=True):
-        st.image(image_bytes,width=1090)
+        st.image(image_bytes,width=1000)
