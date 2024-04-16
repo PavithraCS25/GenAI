@@ -4,12 +4,6 @@ import streamlit as st
 from model import pdfmodel
 import os
 import base64
-
-'''
-This file consists of the frontend streamlit code for the PDF Bot page
-'''
-
-# Setting Streamlit page configuration
 st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
 # Creating columns for image and header
 img,head = st.columns([1,9])

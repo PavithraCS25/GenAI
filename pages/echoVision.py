@@ -3,12 +3,6 @@ import streamlit as st
 import base64
 # Importing custom image model
 from model import imagemodel
-
-'''
-This file contains frontend code for image model page 
-'''
-
-# Setting Streamlit page configuration
 st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
 
 # Creating columns for image and header

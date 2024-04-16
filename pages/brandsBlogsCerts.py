@@ -4,12 +4,6 @@ import streamlit.components.v1 as components
 import base64
 import fitz
 from itertools import cycle
-
-'''
-This file contains code to display the Artefacts of the brands, blogs and certifications that i have
-'''
-
-# Setting Streamlit page configuration
 st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
 
 # Creating columns for image and header

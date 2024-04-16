@@ -2,12 +2,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import base64
-
-'''
-This file contains the frontend code for taiwan dengue analysis.
-'''
-
-# Set page configuration including title, icon, layout, and initial sidebar state
 st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
 # Define column layout for image and header
 img,head = st.columns([1,15])

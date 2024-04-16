@@ -5,13 +5,6 @@ import fitz
 from model import pdfmodel # Importing custom PDF model functions
 import os
 from st_pages import Page, show_pages, add_page_title,Section
-
-'''
-This file contains the frontend code for the home page.
-'''
-
-
-# Set page configuration including title, icon, layout, and initial sidebar state
 st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
 # Header section with name, LinkedIn link, contact, and email
 header = st.container()
