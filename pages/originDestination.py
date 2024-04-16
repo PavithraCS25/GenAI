@@ -1,22 +1,32 @@
+# Import necessary libraries
 import streamlit as st
 import streamlit.components.v1 as components
 import base64
 import fitz
 
+'''
+This file contains the frontend code to display the origin destination analysis.
+'''
+
+# Set page configuration including title, icon, layout, and initial sidebar state
 st.set_page_config(page_title = 'Pavithra Sainath Portfolio' ,page_icon="👩‍💻",layout="wide", initial_sidebar_state="expanded")
+# Define column layout for image and header
 img,head = st.columns([1,9])
+# Display image
 with img:
     st.markdown(
     """<a>
     <img src="data:image/png;base64,{}" width="90">
     </a>""".format(
+        # Encode image to base64
         base64.b64encode(open("images/car.png", "rb").read()).decode()
     ),
     unsafe_allow_html=True,
 )
+# Display header
 with head:
     st.header("Origin Destination Analysis")
-
+# Add divider
 st.divider()
 # Specify the path to your local PDF file
 pdf_file_name = 'images/OD_analysispdf.pdf'
